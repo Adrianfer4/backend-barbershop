@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Entorno
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+*.out
+*.pid
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Compilaciones o builds temporales
+dist/
+build/
+
+# Cobertura de tests
+coverage/
+
+# Archivos temporales
+*.swp
+*.swo
+*.bak
