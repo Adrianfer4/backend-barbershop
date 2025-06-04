@@ -1,3 +1,4 @@
+// src/config/db.js
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 
@@ -10,5 +11,6 @@ export const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 10,
-  queueLimit: 0,
+  queueLimit: 0
 });
+

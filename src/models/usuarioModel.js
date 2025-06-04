@@ -6,7 +6,7 @@ export const insertarUsuario = async (usuario) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const [result] = await pool.query(
-    "INSERT INTO usuarios (nombre, apellido, telefono, email, password, rol) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO usuarios (nombre, apellido, telefono, email, password, rol, verificado) VALUES (?, ?, ?, ?, ?, ?, false)",
     [nombre, apellido, telefono, email, hashedPassword, rol]
   );
   return result.insertId;
