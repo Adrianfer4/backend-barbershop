@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import dotenv from "dotenv";
+import servicioRoutes from "./routes/servicioRoutes.js";
+
 
 dotenv.config();
 
@@ -14,6 +16,7 @@ app.use(express.json());
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/servicios", servicioRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
