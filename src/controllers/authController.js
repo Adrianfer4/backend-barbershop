@@ -101,6 +101,12 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
 
+    // if (!usuario.verificado) {
+    //   return res
+    //     .status(403)
+    //     .json({ error: "Debes verificar tu correo electrónico." });
+    // }
+
     const token = jwt.sign(
       {
         id: usuario.id_usuario,
@@ -174,10 +180,14 @@ export const forgotPassword = async (req, res) => {
   try {
     const usuario = await obtenerUsuarioPorEmail(email);
     if (!usuario) {
-      return res.status(404).json({ error: "No existe una cuenta con ese correo" });
+      return res
+        .status(404)
+        .json({ error: "No existe una cuenta con ese correo" });
     }
 
-    const token = jwt.sign({ id: usuario.id_usuario }, SECRET, { expiresIn: "15m" });
+    const token = jwt.sign({ id: usuario.id_usuario }, SECRET, {
+      expiresIn: "15m",
+    });
 
     const resetLink = `http://localhost:5173/reset-password?token=${token}`;
 
@@ -193,7 +203,9 @@ export const forgotPassword = async (req, res) => {
       `,
     });
 
-    res.json({ mensaje: "Se ha enviado un enlace de recuperación a tu correo" });
+    res.json({
+      mensaje: "Se ha enviado un enlace de recuperación a tu correo",
+    });
   } catch (error) {
     console.error("Error en forgotPassword:", error);
     res.status(500).json({ error: "Error al enviar correo de recuperación" });
@@ -209,10 +221,10 @@ export const resetPassword = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await pool.query(
-      "UPDATE usuarios SET password = ? WHERE id_usuario = ?",
-      [hashedPassword, userId]
-    );
+    await pool.query("UPDATE usuarios SET password = ? WHERE id_usuario = ?", [
+      hashedPassword,
+      userId,
+    ]);
 
     res.json({ mensaje: "Contraseña actualizada correctamente" });
   } catch (error) {

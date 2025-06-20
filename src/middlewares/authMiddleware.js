@@ -14,7 +14,7 @@ export const verificarToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET);
-    req.usuario = decoded; // Guardamos los datos del usuario en la request
+    req.usuario = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ error: "Token inválido" });

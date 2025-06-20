@@ -5,7 +5,7 @@ import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import servicioRoutes from "./routes/servicioRoutes.js";
-
+import citasRoutes from "./routes/citasRoutes.js";
 
 dotenv.config();
 
@@ -17,6 +17,7 @@ app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/servicios", servicioRoutes);
+app.use("/api/citas", citasRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {

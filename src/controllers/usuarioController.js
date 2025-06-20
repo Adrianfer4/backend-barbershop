@@ -4,14 +4,17 @@ import {
   obtenerUsuarioPorId,
   actualizarUsuario,
   eliminarUsuario,
+  obtenerUsuarioPorEmail,
 } from "../models/usuarioModel.js";
 
 export const getUsuarios = async (req, res) => {
+  const { rol } = req.query;
+
   try {
-    const usuarios = await obtenerUsuarios();
+    const usuarios = await obtenerUsuarios(rol);
     res.json(usuarios);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener los clientes" });
+    res.status(500).json({ error: "Error al obtener usuarios" });
   }
 };
 
@@ -31,10 +34,22 @@ export const getUsuarioById = async (req, res) => {
 export const createUsuario = async (req, res) => {
   try {
     const { nombre, apellido, telefono, email, password, rol } = req.body;
+
     if (!nombre || !apellido || !telefono || !email || !password || !rol) {
       return res
         .status(400)
         .json({ error: "Todos los campos son obligatorios" });
+    }
+
+    if (!/^\d{10}$/.test(telefono)) {
+      return res.status(400).json({
+        error: "El número de teléfono debe tener 10 dígitos numéricos",
+      });
+    }
+
+    const existe = await obtenerUsuarioPorEmail(email);
+    if (existe) {
+      return res.status(400).json({ error: "El correo ya está registrado" });
     }
 
     const id = await insertarUsuario({
@@ -44,11 +59,12 @@ export const createUsuario = async (req, res) => {
       email,
       password,
       rol,
+      verificado: true,
     });
-    res
-      .status(201)
-      .json({ id, nombre, apellido, telefono, email, password, rol });
+
+    res.status(201).json({ id, nombre, apellido, telefono, email, rol });
   } catch (error) {
+    console.error("Error al crear cliente:", error);
     res.status(500).json({ error: "Error al crear el cliente" });
   }
 };
