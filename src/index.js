@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import './cronJobs/recordatorio.js';
+
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -17,6 +20,8 @@ app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/servicios", servicioRoutes);
+app.use("/api/citas", citasRoutes);
+app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api/citas", citasRoutes);
 
 // Ruta de prueba

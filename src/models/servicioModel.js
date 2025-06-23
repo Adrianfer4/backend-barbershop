@@ -2,7 +2,7 @@ import { pool } from "../config/db.js";
 
 export const obtenerServicios = async () => {
   const [rows] = await pool.query(
-    "SELECT id_servicio, nombre_servicio, descripcion, precio, duracion FROM servicios"
+    "SELECT id_servicio, nombre_servicio, descripcion, precio, duracion, imagen FROM servicios"
   );
   return rows;
 };
@@ -30,21 +30,22 @@ export const insertarServicio = async ({
   descripcion,
   precio,
   duracion,
+  imagen,
 }) => {
   const [result] = await pool.query(
-    "INSERT INTO servicios (nombre_servicio, descripcion, precio, duracion) VALUES (?, ?, ?, ?)",
-    [nombre_servicio, descripcion, precio, duracion]
+    "INSERT INTO servicios (nombre_servicio, descripcion, precio, duracion, imagen) VALUES (?, ?, ?, ?, ?)",
+    [nombre_servicio, descripcion, precio, duracion, imagen]
   );
   return result.insertId;
 };
 
 export const actualizarServicio = async (
   id,
-  { nombre_servicio, descripcion, precio, duracion }
+  { nombre_servicio, descripcion, precio, duracion, imagen }
 ) => {
   await pool.query(
-    "UPDATE servicios SET nombre_servicio = ?, descripcion = ?, precio = ?, duracion = ? WHERE id_servicio = ?",
-    [nombre_servicio, descripcion, precio, duracion, id]
+    "UPDATE servicios SET nombre_servicio = ?, descripcion = ?, precio = ?, duracion = ?, imagen = ? WHERE id_servicio = ?",
+    [nombre_servicio, descripcion, precio, duracion, imagen, id]
   );
 };
 

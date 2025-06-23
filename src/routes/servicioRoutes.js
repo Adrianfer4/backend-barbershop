@@ -6,13 +6,14 @@ import {
   updateServicio,
   deleteServicio,
 } from "../controllers/servicioController.js";
+import { uploadServicio } from "../middlewares/upload.js";
 
 const router = express.Router();
 
 router.get("/", getServicios);
 router.get("/:id", getServicio);
-router.post("/", createServicio);
-router.put("/:id", updateServicio);
+router.post("/", uploadServicio.single("imagen"), createServicio);
+router.put("/:id", uploadServicio.single("imagen"), updateServicio);
 router.delete("/:id", deleteServicio);
 
 export default router;

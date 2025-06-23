@@ -77,9 +77,6 @@ export const register = async (req, res) => {
       `,
     });
 
-    // console.log("Correo enviado:", info.messageId);
-    // console.log("Verifica tu correo:", verificationLink);
-
     res.status(201).json({ mensaje: "Usuario registrado correctamente", id });
   } catch (error) {
     console.error("Error al registrar o enviar correo:", error);
@@ -232,3 +229,4 @@ export const resetPassword = async (req, res) => {
     res.status(400).json({ error: "Token inválido o expirado" });
   }
 };
+

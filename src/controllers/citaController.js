@@ -1,14 +1,17 @@
 import {
   insertarCita,
   obtenerCitas,
+  obtenerCitasAdmin,
+  cambiarEstadoCita,
   obtenerHorariosEnFecha,
   actualizarCita,
   eliminarCita,
 } from "../models/citaModel.js";
 import { obtenerDuracionDelServicio } from "../models/servicioModel.js";
 
-const HORA_APERTURA = 9 * 60; 
-const HORA_CIERRE = 18 * 60; 
+const HORA_APERTURA = 9 * 60;
+const HORA_CIERRE = 18 * 60;
+const MARGEN_RESERVA = 30;
 
 const aMin = (hora) => {
   const [h, m] = hora.split(":").map(Number);
@@ -17,15 +20,11 @@ const aMin = (hora) => {
 
 export const crearCita = async (req, res) => {
   try {
-    const {
-      id_usuario,
-      fecha,
-      hora,
-      servicio,
-      estado = "pendiente",
-    } = req.body;
+    const { fecha, hora, servicio, id_barbero } = req.body;
 
-    if (!id_usuario || !fecha || !hora || !servicio) {
+    const id_usuario = req.usuario.id;
+
+    if (!id_usuario || !fecha || !hora || !servicio || !id_barbero) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
@@ -36,7 +35,7 @@ export const crearCita = async (req, res) => {
     }
 
     // Obtener todas las citas en esa fecha
-    const citas = await obtenerHorariosEnFecha(fecha, id_usuario);
+    const citas = await obtenerHorariosEnFecha(fecha, id_barbero);
 
     const nuevaInicio = aMin(hora);
     const nuevaFin = nuevaInicio + duracion;
@@ -57,7 +56,8 @@ export const crearCita = async (req, res) => {
       fecha,
       hora,
       servicio,
-      estado,
+      estado: "pendiente",
+      id_barbero,
     });
     res.status(201).json({ mensaje: "Cita registrada", id });
   } catch (error) {
@@ -72,6 +72,37 @@ export const listarCitas = async (req, res) => {
     res.json(citas);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener las citas" });
+  }
+};
+
+export const getCitasAdmin = async (req, res) => {
+  try {
+    const { estado, fecha } = req.query;
+    const citas = await obtenerCitasAdmin({
+      estado,
+      soloHoy: fecha === "hoy",
+    });
+    res.json(citas);
+  } catch (error) {
+    console.error("Error al obtener citas admin:", error);
+    res.status(500).json({ error: "Error al obtener citas" });
+  }
+};
+
+export const actualizarEstadoCita = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    if (!["pendiente", "realizada", "cancelada"].includes(estado)) {
+      return res.status(400).json({ error: "Estado no válido" });
+    }
+
+    await cambiarEstadoCita(id, estado);
+    res.json({ mensaje: "Estado actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar estado:", error);
+    res.status(500).json({ error: "Error al actualizar estado de la cita" });
   }
 };
 
@@ -140,7 +171,7 @@ export const obtenerHorariosLibres = async (req, res) => {
     const minActual = esHoy
       ? ahora.getHours() * 60 + ahora.getMinutes()
       : -Infinity;
-    const minInicio = Math.max(HORA_APERTURA, minActual);
+    const minInicio = Math.max(HORA_APERTURA, minActual + MARGEN_RESERVA);
     const minFin = HORA_CIERRE - duracion;
 
     if (minInicio > minFin) {
