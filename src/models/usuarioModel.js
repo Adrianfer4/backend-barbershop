@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 export const insertarUsuario = async (usuario) => {
   const { nombre, apellido, telefono, email, password, rol } = usuario;
   const hashedPassword = await bcrypt.hash(password, 10);
-  const verificado = usuario.verificado ?? false; // usa el valor recibido o false por defecto
+  const verificado = usuario.verificado ?? false;
 
   const [result] = await pool.query(
     "INSERT INTO usuarios (nombre, apellido, telefono, email, password, rol, verificado) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -27,7 +27,15 @@ export const obtenerUsuarios = async (rol) => {
 
 export const obtenerUsuarioPorId = async (id) => {
   const [rows] = await pool.query(
-    "SELECT id_usuario, nombre, apellido, telefono, email, rol FROM usuarios WHERE id_usuario = ?",
+    "SELECT id_usuario, nombre, apellido, telefono, email, rol, foto_perfil FROM usuarios WHERE id_usuario = ?",
+    [id]
+  );
+  return rows[0];
+};
+
+export const obtenerUsuarioConPasswordPorId = async (id) => {
+  const [rows] = await pool.query(
+    "SELECT id_usuario, password FROM usuarios WHERE id_usuario = ?",
     [id]
   );
   return rows[0];
@@ -42,11 +50,36 @@ export const obtenerUsuarioPorEmail = async (email) => {
 
 export const actualizarUsuario = async (id, usuario) => {
   const { nombre, apellido, telefono, email, rol } = usuario;
+
+  let query =
+    "UPDATE usuarios SET nombre = ?, apellido = ?, telefono = ?, email = ?";
+  let params = [nombre, apellido, telefono, email];
+
+  if (rol !== undefined) {
+    query += ", rol = ?";
+    params.push(rol);
+  }
+
+  query += " WHERE id_usuario = ?";
+  params.push(id);
+
+  const [result] = await pool.query(query, params);
+  return result.affectedRows > 0;
+};
+
+export const actualizarFotoPerfil = async (id, nombreArchivo) => {
   const [result] = await pool.query(
-    "UPDATE usuarios SET nombre = ?, apellido = ?, telefono = ?, email = ?, rol = ? WHERE id_usuario = ?",
-    [nombre, apellido, telefono, email, rol, id]
+    "UPDATE usuarios SET foto_perfil = ? WHERE id_usuario = ?",
+    [nombreArchivo, id]
   );
   return result.affectedRows > 0;
+};
+
+export const actualizarPassword = async (id, passwordHash) => {
+  await pool.query("UPDATE usuarios SET password = ? WHERE id_usuario = ?", [
+    passwordHash,
+    id,
+  ]);
 };
 
 export const eliminarUsuario = async (id) => {

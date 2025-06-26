@@ -19,7 +19,9 @@ app.use(express.json());
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+
 app.use("/api/servicios", servicioRoutes);
+
 app.use("/api/citas", citasRoutes);
 app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api/citas", citasRoutes);

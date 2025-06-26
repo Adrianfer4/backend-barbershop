@@ -5,7 +5,11 @@ import {
   actualizarUsuario,
   eliminarUsuario,
   obtenerUsuarioPorEmail,
+  actualizarFotoPerfil,
+  actualizarPassword,
+  obtenerUsuarioConPasswordPorId 
 } from "../models/usuarioModel.js";
+import bcrypt from "bcrypt";
 
 export const getUsuarios = async (req, res) => {
   const { rol } = req.query;
@@ -69,6 +73,30 @@ export const createUsuario = async (req, res) => {
   }
 };
 
+export const subirFotoPerfil = async (req, res) => {
+  const id = req.params.id;
+  const archivo = req.file?.filename;
+
+  if (!archivo) {
+    return res.status(400).json({ mensaje: "No se subió ninguna imagen." });
+  }
+
+  try {
+    const actualizado = await actualizarFotoPerfil(id, archivo);
+    if (!actualizado) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado." });
+    }
+
+    res.json({
+      mensaje: "Foto de perfil actualizada correctamente.",
+      foto_perfil: archivo,
+    });
+  } catch (error) {
+    console.error("Error al actualizar foto de perfil:", error);
+    res.status(500).json({ mensaje: "Error del servidor al guardar la foto." });
+  }
+};
+
 export const updateUsuario = async (req, res) => {
   try {
     const actualizado = await actualizarUsuario(req.params.id, req.body);
@@ -92,5 +120,34 @@ export const deleteUsuario = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar el cliente" });
+  }
+};
+
+export const cambiarPassword = async (req, res) => {
+  const { id } = req.params;
+  const { actual, nueva } = req.body;
+
+  try {
+    const usuario = await obtenerUsuarioConPasswordPorId(id);
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    if (!usuario.password) {
+      return res.status(500).json({ message: "No se pudo obtener la contraseña del usuario." });
+    }
+
+    const coincide = await bcrypt.compare(actual, usuario.password);
+    if (!coincide) {
+      return res.status(400).json({ message: "La contraseña actual es incorrecta" });
+    }
+
+    const nuevaHash = await bcrypt.hash(nueva, 10);
+    await actualizarPassword(id, nuevaHash);
+
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error("Error al cambiar contraseña:", error);
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };

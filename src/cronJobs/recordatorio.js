@@ -1,14 +1,14 @@
-import cron from 'node-cron';
-import transporter from '../config/mailer.js';
+import cron from "node-cron";
+import transporter from "../config/mailer.js";
 import {
   obtenerCitasParaRecordatorio,
-  marcarRecordatorioEnviado
-} from '../models/citaModel.js';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+  marcarRecordatorioEnviado,
+} from "../models/citaModel.js";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 // Ejecutar cada minuto
-cron.schedule('* * * * *', async () => {
+cron.schedule("* * * * *", async () => {
   try {
     const citas = await obtenerCitasParaRecordatorio();
 
@@ -32,14 +32,14 @@ Si deseas cancelar, responde con: CANCELAR.
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: cita.email,
-        subject: 'Recordatorio: tu cita es en 1 hora',
+        subject: "Recordatorio: tu cita es en 1 hora",
         text: mensaje,
       });
 
       await marcarRecordatorioEnviado(cita.id_cita);
     }
   } catch (err) {
-    console.error('Error en cron recordatorio:', err);
+    console.error("Error en cron recordatorio:", err);
   }
 });
 

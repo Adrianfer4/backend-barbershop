@@ -6,7 +6,9 @@ import {
   updateServicio,
   deleteServicio,
 } from "../controllers/servicioController.js";
-import { uploadServicio } from "../middlewares/upload.js";
+import { crearUploadMiddleware } from "../middlewares/upload.js";
+
+const uploadServicio = crearUploadMiddleware("servicios");
 
 const router = express.Router();
 
