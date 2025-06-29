@@ -15,10 +15,10 @@ const router = express.Router();
 router.get("/", listarCitas);
 router.get("/horarios", obtenerHorariosLibres);
 router.post("/", verificarToken, crearCita);
+router.put("/:id/estado", actualizarEstadoCita);
 router.put("/:id", editarCita);
 router.delete("/:id", borrarCita);
 
 router.get("/admin", getCitasAdmin);
-router.put("/:id/estado", actualizarEstadoCita);
 
 export default router;

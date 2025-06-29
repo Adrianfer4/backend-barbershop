@@ -9,7 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import servicioRoutes from "./routes/servicioRoutes.js";
 import citasRoutes from "./routes/citasRoutes.js";
-
+import ingresosRoutes from "./routes/ingresosRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -24,7 +24,8 @@ app.use("/api/servicios", servicioRoutes);
 
 app.use("/api/citas", citasRoutes);
 app.use("/uploads", express.static(path.resolve("uploads")));
-app.use("/api/citas", citasRoutes);
+
+app.use("/api/ingresos", ingresosRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {

@@ -33,6 +33,16 @@ export const obtenerUsuarioPorId = async (id) => {
   return rows[0];
 };
 
+// Obtener todos los usuarios con rol "barbershop"
+export const obtenerUsuariosBarberos = async () => {
+  const [rows] = await pool.query(
+    `SELECT id_usuario, nombre, apellido, telefono, email, rol, foto_perfil 
+     FROM usuarios 
+     WHERE rol = 'barbershop'`
+  );
+  return rows;
+};
+
 export const obtenerUsuarioConPasswordPorId = async (id) => {
   const [rows] = await pool.query(
     "SELECT id_usuario, password FROM usuarios WHERE id_usuario = ?",

@@ -6,8 +6,14 @@ import {
   obtenerHorariosEnFecha,
   actualizarCita,
   eliminarCita,
+  obtenerCitaConDetalles,
 } from "../models/citaModel.js";
 import { obtenerDuracionDelServicio } from "../models/servicioModel.js";
+import {
+  eliminarIngresoPorCita,
+  obtenerIngresoPorCita,
+  insertarIngreso,
+} from "../models/ingresosModel.js";
 
 const HORA_APERTURA = 9 * 60;
 const HORA_CIERRE = 18 * 60;
@@ -99,6 +105,27 @@ export const actualizarEstadoCita = async (req, res) => {
     }
 
     await cambiarEstadoCita(id, estado);
+
+    if (estado === "realizada") {
+      const cita = await obtenerCitaConDetalles(id);
+
+      if (!cita) {
+        return res.status(404).json({ error: "Cita no encontrada" });
+      }
+
+      const yaExiste = await obtenerIngresoPorCita(id);
+      if (!yaExiste) {
+        await insertarIngreso({
+          id_cita: id,
+          id_barbero: cita.id_barbero,
+          id_servicio: cita.id_servicio,
+          monto: cita.precio,
+        });
+      }
+    } else {
+      await eliminarIngresoPorCita(id);
+    }
+
     res.json({ mensaje: "Estado actualizado correctamente" });
   } catch (error) {
     console.error("Error al actualizar estado:", error);

@@ -7,6 +7,7 @@ import {
   deleteUsuario,
   subirFotoPerfil,
   cambiarPassword,
+  getUsuariosBarberos
 } from "../controllers/usuarioController.js";
 import { crearUploadMiddleware } from "../middlewares/upload.js";
 
@@ -15,6 +16,7 @@ const uploadUsuario = crearUploadMiddleware("usuarios");
 const router = Router();
 
 router.get("/", getUsuarios);
+router.get("/barberos", getUsuariosBarberos);
 router.get("/:id", getUsuarioById);
 router.post("/", createUsuario);
 router.put("/:id", updateUsuario);

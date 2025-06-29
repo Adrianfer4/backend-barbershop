@@ -7,7 +7,8 @@ import {
   obtenerUsuarioPorEmail,
   actualizarFotoPerfil,
   actualizarPassword,
-  obtenerUsuarioConPasswordPorId 
+  obtenerUsuarioConPasswordPorId,
+  obtenerUsuariosBarberos 
 } from "../models/usuarioModel.js";
 import bcrypt from "bcrypt";
 
@@ -32,6 +33,16 @@ export const getUsuarioById = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el cliente" });
+  }
+};
+
+export const getUsuariosBarberos = async (req, res) => {
+  try {
+    const barberos = await obtenerUsuariosBarberos();
+    res.json(barberos);
+  } catch (error) {
+    console.error("Error al obtener barberos:", error.message);
+    res.status(500).json({ error: "Error al obtener los barberos" });
   }
 };
 

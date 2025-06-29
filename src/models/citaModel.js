@@ -62,6 +62,20 @@ export const cambiarEstadoCita = async (id_cita, nuevoEstado) => {
   ]);
 };
 
+export const obtenerCitaConDetalles = async (idCita) => {
+  const [rows] = await pool.query(
+    `
+    SELECT c.id_cita, c.id_barbero, c.servicio AS id_servicio, s.precio
+    FROM citas c
+    JOIN servicios s ON c.servicio = s.id_servicio
+    WHERE c.id_cita = ?
+  `,
+    [idCita]
+  );
+  // console.log("Cita con detalles:", rows[0]);
+  return rows[0];
+};
+
 export const obtenerHorariosEnFecha = async (fecha, id_barbero) => {
   const [rows] = await pool.query(
     `SELECT hora, duracion
