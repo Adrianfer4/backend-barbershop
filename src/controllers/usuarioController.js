@@ -8,7 +8,8 @@ import {
   actualizarFotoPerfil,
   actualizarPassword,
   obtenerUsuarioConPasswordPorId,
-  obtenerUsuariosBarberos 
+  obtenerUsuariosBarberos,
+  contarUsuariosDB
 } from "../models/usuarioModel.js";
 import bcrypt from "bcrypt";
 
@@ -145,12 +146,16 @@ export const cambiarPassword = async (req, res) => {
     }
 
     if (!usuario.password) {
-      return res.status(500).json({ message: "No se pudo obtener la contraseña del usuario." });
+      return res
+        .status(500)
+        .json({ message: "No se pudo obtener la contraseña del usuario." });
     }
 
     const coincide = await bcrypt.compare(actual, usuario.password);
     if (!coincide) {
-      return res.status(400).json({ message: "La contraseña actual es incorrecta" });
+      return res
+        .status(400)
+        .json({ message: "La contraseña actual es incorrecta" });
     }
 
     const nuevaHash = await bcrypt.hash(nueva, 10);
@@ -160,5 +165,15 @@ export const cambiarPassword = async (req, res) => {
   } catch (error) {
     console.error("Error al cambiar contraseña:", error);
     res.status(500).json({ message: "Error en el servidor" });
+  }
+};
+
+export const contarUsuarios = async (req, res) => {
+  try {
+    const total = await contarUsuariosDB();
+    res.json(total);
+  } catch (error) {
+    console.error("Error al contar usuarios:", error);
+    res.status(500).json({ error: "Error al contar usuarios" });
   }
 };

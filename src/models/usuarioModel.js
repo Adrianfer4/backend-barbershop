@@ -99,3 +99,9 @@ export const eliminarUsuario = async (id) => {
   );
   return result.affectedRows > 0;
 };
+
+export const contarUsuariosDB = async () => {
+  const [result] = await pool.query("SELECT COUNT(*) AS total FROM usuarios WHERE rol = 'cliente'");
+  return result[0];
+};
+

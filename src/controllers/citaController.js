@@ -7,6 +7,8 @@ import {
   actualizarCita,
   eliminarCita,
   obtenerCitaConDetalles,
+  contarCitas,
+  obtenerCitasPorDia,
 } from "../models/citaModel.js";
 import { obtenerDuracionDelServicio } from "../models/servicioModel.js";
 import {
@@ -192,15 +194,22 @@ export const obtenerHorariosLibres = async (req, res) => {
       return [inicio, inicio + duracionMin];
     });
 
-    // Determinar límites temporales
+    // Determinar si la fecha es hoy (en hora local, no UTC)
+    const fechaHoyLocal = new Date().toLocaleDateString("sv-SE"); // YYYY-MM-DD
+    const esHoy = fecha === fechaHoyLocal;
+
+    // Tiempo actual en minutos desde medianoche
     const ahora = new Date();
-    const esHoy = fecha === ahora.toISOString().split("T")[0];
-    const minActual = esHoy
-      ? ahora.getHours() * 60 + ahora.getMinutes()
-      : -Infinity;
-    const minInicio = Math.max(HORA_APERTURA, minActual + MARGEN_RESERVA);
+    const minActual = ahora.getHours() * 60 + ahora.getMinutes();
+
+    // Tiempo mínimo válido: depende de si es hoy o futuro
+    const minInicio = esHoy
+      ? Math.max(HORA_APERTURA, minActual + MARGEN_RESERVA)
+      : HORA_APERTURA;
+
     const minFin = HORA_CIERRE - duracion;
 
+    // Si ya no hay espacio para reservar, devuelve vacío
     if (minInicio > minFin) {
       return res.json([]);
     }
@@ -227,5 +236,25 @@ export const obtenerHorariosLibres = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error interno al obtener horarios disponibles" });
+  }
+};
+
+export const TotalCitas = async (req, res) => {
+  try {
+    const total = await contarCitas();
+    res.json(total);
+  } catch (error) {
+    console.error("Error al contar citas:", error);
+    res.status(500).json({ error: "Error al contar citas" });
+  }
+};
+
+export const citasPorDia = async (req, res) => {
+  try {
+    const datos = await obtenerCitasPorDia();
+    res.json(datos);
+  } catch (error) {
+    console.error("Error al obtener citas por día", error);
+    res.status(500).json({ message: "Error del servidor" });
   }
 };

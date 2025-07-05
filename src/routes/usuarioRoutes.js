@@ -7,13 +7,16 @@ import {
   deleteUsuario,
   subirFotoPerfil,
   cambiarPassword,
-  getUsuariosBarberos
+  getUsuariosBarberos,
+  contarUsuarios,
 } from "../controllers/usuarioController.js";
 import { crearUploadMiddleware } from "../middlewares/upload.js";
 
 const uploadUsuario = crearUploadMiddleware("usuarios");
 
 const router = Router();
+
+router.get("/contar", contarUsuarios);
 
 router.get("/", getUsuarios);
 router.get("/barberos", getUsuariosBarberos);

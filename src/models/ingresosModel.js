@@ -117,3 +117,22 @@ export const obtenerTotalesAgrupados = async (filtro, año, mes, diaSemana) => {
   const [rows] = await pool.query(query, params);
   return rows;
 };
+
+export const totalIngresos = async () => {
+  const [result] = await pool.query("SELECT SUM(monto) AS total FROM ingresos");
+  return result[0];
+};
+
+export const obtenerTotalesPorBarbero = async () => {
+  const [rows] = await pool.query(`
+    SELECT u.nombre AS barbero, SUM(i.monto) AS total
+FROM ingresos i
+JOIN usuarios u ON i.id_barbero = u.id_usuario
+WHERE MONTH(i.fecha) = MONTH(CURDATE())
+  AND YEAR(i.fecha) = YEAR(CURDATE())
+GROUP BY i.id_barbero;
+
+`);
+
+  return rows;
+};

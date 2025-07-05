@@ -133,3 +133,31 @@ export const marcarRecordatorioEnviado = async (id_cita) => {
     [id_cita]
   );
 };
+
+export const contarCitas = async () => {
+  const [result] = await pool.query("SELECT COUNT(*) AS total FROM citas");
+  return result[0];
+};
+
+export const obtenerCitasPorDia = async () => {
+  const [rows] = await pool.query(`
+    SELECT 
+      DAYOFWEEK(fecha) AS dia_semana, 
+      COUNT(*) AS total
+    FROM citas
+    WHERE WEEK(fecha, 1) = WEEK(CURDATE(), 1)
+      AND YEAR(fecha) = YEAR(CURDATE())
+    GROUP BY dia_semana
+    ORDER BY dia_semana;
+  `);
+
+  // Array con 7 días de lunes a domingo, inicializados en 0
+  const citasPorDia = [0, 0, 0, 0, 0, 0, 0];
+
+  rows.forEach(({ dia_semana, total }) => {
+    const index = dia_semana === 1 ? 6 : dia_semana - 2; // 1 (domingo) → 6, 2 (lunes) → 0
+    citasPorDia[index] = total;
+  });
+
+  return citasPorDia;
+};

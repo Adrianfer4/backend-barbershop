@@ -4,6 +4,7 @@ import {
   insertarServicio,
   actualizarServicio,
   eliminarServicio,
+  contarServicios,
 } from "../models/servicioModel.js";
 
 export const getServicios = async (req, res) => {
@@ -84,5 +85,15 @@ export const deleteServicio = async (req, res) => {
     res.json({ mensaje: "Servicio eliminado" });
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar el servicio" });
+  }
+};
+
+export const totalServicios = async (req, res) => {
+  try {
+    const resultado = await contarServicios();
+    res.json({ total: resultado.total });
+  } catch (error) {
+    console.error("Error al contar servicios:", error);
+    res.status(500).json({ error: "Error al contar servicios" });
   }
 };

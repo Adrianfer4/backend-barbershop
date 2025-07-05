@@ -24,7 +24,6 @@ export const obtenerDuracionDelServicio = async (id_servicio) => {
   return servicio?.duracion || null;
 };
 
-
 export const insertarServicio = async ({
   nombre_servicio,
   descripcion,
@@ -51,4 +50,9 @@ export const actualizarServicio = async (
 
 export const eliminarServicio = async (id) => {
   await pool.query("DELETE FROM servicios WHERE id_servicio = ?", [id]);
+};
+
+export const contarServicios = async () => {
+  const [rows] = await pool.query("SELECT COUNT(*) AS total FROM servicios");
+  return rows[0];
 };

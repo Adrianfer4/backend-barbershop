@@ -6,7 +6,9 @@ import {
   borrarCita,
   obtenerHorariosLibres,
   getCitasAdmin,
-  actualizarEstadoCita 
+  actualizarEstadoCita,
+  TotalCitas,
+  citasPorDia,
 } from "../controllers/citaController.js";
 import { verificarToken } from "../middlewares/authMiddleware.js";
 
@@ -20,5 +22,8 @@ router.put("/:id", editarCita);
 router.delete("/:id", borrarCita);
 
 router.get("/admin", getCitasAdmin);
+
+router.get("/contar", TotalCitas);
+router.get("/por-dia", verificarToken, citasPorDia);
 
 export default router;
