@@ -20,22 +20,22 @@ export const obtenerCitas = async () => {
   return rows;
 };
 
-// src/models/citaModel.js
 export const obtenerCitasAdmin = async ({ estado, soloHoy }) => {
   let query = `
     SELECT
-      c.id_cita,
-      cliente.nombre AS cliente_nombre,
-      barbero.nombre AS barbero_nombre,
-      c.fecha,
-      c.hora,
-      s.nombre_servicio,
-      c.estado
-    FROM citas c
-    JOIN usuarios cliente ON c.id_usuario = cliente.id_usuario
-    JOIN usuarios barbero ON c.id_barbero = barbero.id_usuario
-    JOIN servicios s ON c.servicio = s.id_servicio
-    WHERE c.fecha >= CURDATE()
+  c.id_cita,
+  cliente.nombre AS cliente_nombre,
+  barbero.nombre AS barbero_nombre,
+  c.fecha,
+  c.hora,
+  s.nombre_servicio,
+  c.estado,
+  c.id_barbero
+FROM citas c
+JOIN usuarios cliente ON c.id_usuario = cliente.id_usuario
+JOIN usuarios barbero ON c.id_barbero = barbero.id_usuario
+JOIN servicios s ON c.servicio = s.id_servicio
+WHERE c.fecha >= CURDATE()
   `;
 
   const params = [];
@@ -88,11 +88,15 @@ export const obtenerHorariosEnFecha = async (fecha, id_barbero) => {
 };
 
 export const actualizarCita = async (id, datos) => {
-  const { fecha, hora, servicio, estado } = datos;
+  const { fecha, hora, servicio, estado, id_barbero } = datos;
+
   const [result] = await pool.query(
-    "UPDATE citas SET fecha = ?, hora = ?, servicio = ?, estado = ? WHERE id_cita = ?",
-    [fecha, hora, servicio, estado, id]
+    `UPDATE citas 
+     SET fecha = ?, hora = ?, servicio = ?, estado = ?, id_barbero = ?
+     WHERE id_cita = ?`,
+    [fecha, hora, servicio, estado || "pendiente", id_barbero, id]
   );
+
   return result.affectedRows > 0;
 };
 
@@ -107,21 +111,21 @@ export const eliminarCita = async (id) => {
 export const obtenerCitasParaRecordatorio = async () => {
   const [rows] = await pool.query(`
     SELECT 
-      c.id_cita,
-      c.fecha,
-      c.hora,
-      u.email,
-      u.nombre AS cliente_nombre,
-      b.nombre AS barbero_nombre,
-      s.nombre_servicio
-    FROM citas c
-    JOIN usuarios u ON c.id_usuario = u.id_usuario
-    JOIN usuarios b ON c.id_barbero = b.id_usuario
-    JOIN servicios s ON c.servicio = s.id_servicio
-    WHERE 
-      c.estado = 'pendiente'
-      AND c.recordatorio_enviado = 0
-      AND TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(c.fecha, ' ', c.hora)) BETWEEN 59 AND 61
+  c.id_cita,
+  c.fecha,
+  TIME_FORMAT(c.hora, '%H:%i') AS hora,
+  u.email,
+  u.nombre AS cliente_nombre,
+  b.nombre AS barbero_nombre,
+  s.nombre_servicio
+FROM citas c
+JOIN usuarios u ON c.id_usuario = u.id_usuario
+JOIN usuarios b ON c.id_barbero = b.id_usuario
+JOIN servicios s ON c.servicio = s.id_servicio
+WHERE 
+  c.estado = 'pendiente'
+  AND c.recordatorio_enviado = 0
+  AND TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(c.fecha, ' ', c.hora)) BETWEEN 59 AND 61
   `);
   return rows;
 };

@@ -6,11 +6,12 @@ export const insertarIngreso = async ({
   id_barbero,
   id_servicio,
   monto,
+  descripcion
 }) => {
   const [result] = await pool.query(
-    `INSERT INTO ingresos (id_cita, id_barbero, id_servicio, monto, fecha) 
-     VALUES (?, ?, ?, ?, NOW())`,
-    [id_cita, id_barbero, id_servicio, monto]
+    `INSERT INTO ingresos (id_cita, id_barbero, id_servicio, monto, descripcion, fecha) 
+     VALUES (?, ?, ?, ?, ?, NOW())`,
+    [id_cita ?? null, id_barbero, id_servicio, monto, descripcion ?? null]
   );
   return result.insertId;
 };
@@ -135,4 +136,22 @@ GROUP BY i.id_barbero;
 `);
 
   return rows;
+};
+
+export const actualizarIngreso = async (id, { id_barbero, id_servicio, monto, descripcion }) => {
+  const [result] = await pool.query(
+    `UPDATE ingresos 
+     SET id_barbero = ?, id_servicio = ?, monto = ?, descripcion = ? 
+     WHERE id_ingreso = ?`,
+    [id_barbero, id_servicio, monto, descripcion ?? null, id]
+  );
+  return result.affectedRows > 0;
+};
+
+export const eliminarIngresoPorId = async (id_ingreso) => {
+  const [result] = await pool.query(
+    `DELETE FROM ingresos WHERE id_ingreso = ?`,
+    [id_ingreso]
+  );
+  return result.affectedRows > 0;
 };

@@ -137,13 +137,27 @@ export const actualizarEstadoCita = async (req, res) => {
 
 export const editarCita = async (req, res) => {
   try {
-    const actualizado = await actualizarCita(req.params.id, req.body);
+    const { fecha, hora, servicio, estado, id_barbero } = req.body;
+
+    if (!fecha || !hora || !servicio || !id_barbero) {
+      return res.status(400).json({ error: "Faltan campos obligatorios" });
+    }
+
+    const actualizado = await actualizarCita(req.params.id, {
+      fecha,
+      hora,
+      servicio,
+      estado,
+      id_barbero,
+    });
+
     if (actualizado) {
       res.json({ mensaje: "Cita actualizada correctamente" });
     } else {
       res.status(404).json({ error: "Cita no encontrada" });
     }
   } catch (error) {
+    console.error("Error al actualizar cita:", error);
     res.status(500).json({ error: "Error al actualizar la cita" });
   }
 };
