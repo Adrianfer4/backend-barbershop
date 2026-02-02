@@ -2,21 +2,26 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import './cronJobs/recordatorio.js';
+import "./cronJobs/recordatorio.js";
 
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import servicioRoutes from "./routes/servicioRoutes.js";
 import citasRoutes from "./routes/citasRoutes.js";
-import ingresosRoutes from "./routes/ingresosRoutes.js"
+import ingresosRoutes from "./routes/ingresosRoutes.js";
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: ["http://localhost:3000", "https://frontend-barbershop-kappa.vercel.app"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://frontend-barbershop-kappa.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use("/api/usuarios", usuarioRoutes);
