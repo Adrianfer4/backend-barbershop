@@ -12,6 +12,7 @@ export const getServicios = async (req, res) => {
     const servicios = await obtenerServicios();
     res.json(servicios);
   } catch (error) {
+    console.error('Error en getServicios:', error);
     res.status(500).json({ error: "Error al obtener los servicios" });
   }
 };
