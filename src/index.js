@@ -13,7 +13,10 @@ import ingresosRoutes from "./routes/ingresosRoutes.js"
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:3000", "https://frontend-barbershop-kappa.vercel.app"],
+  credentials: true,
+}));
 app.use(express.json());
 
 app.use("/api/usuarios", usuarioRoutes);
