@@ -19,15 +19,16 @@ console.log("DB_NAME:", process.env.DB_NAME);
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://frontend-barbershop-kappa.vercel.app",
-    ],
-    credentials: true,
-  }),
-);
+app.use(cors({
+  origin: [
+    'https://frontend-barbershop-git-main-nestor-fernandezs-projects.vercel.app',
+    'http://localhost:5173', // Para desarrollo local
+    'https://*.vercel.app' // Para todos los despliegues de Vercel
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 app.use("/api/usuarios", usuarioRoutes);
