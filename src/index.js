@@ -19,17 +19,29 @@ console.log("DB_NAME:", process.env.DB_NAME);
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
+
+// Leer orígenes permitidos desde variable de entorno o usar valores por defecto
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [
+      "https://frontend-barbershop-kappa.vercel.app",
+      "http://localhost:5173"
+    ];
+
 app.use(
   cors({
-    origin: [
-      "https://frontend-barbershop-git-main-nestor-fernandezs-projects.vercel.app",
-      "http://localhost:5173", // Para desarrollo local
-      "https://*.vercel.app", // Para todos los despliegues de Vercel
-    ],
+    origin: function (origin, callback) {
+      // Permitir peticiones sin origen (como Postman) o si está en la lista
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("No permitido por CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 app.use(express.json());
 
