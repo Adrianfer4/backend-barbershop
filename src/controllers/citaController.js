@@ -218,6 +218,10 @@ export const obtenerHorariosLibres = async (req, res) => {
     // Tiempo actual en minutos desde medianoche
     const ahora = new Date();
     const minActual = ahora.getHours() * 60 + ahora.getMinutes();
+    
+    // DEBUG: Mostrar la hora que el servidor está usando
+    const horaDebug = String(ahora.getHours()).padStart(2, '0') + ':' + String(ahora.getMinutes()).padStart(2, '0');
+    console.log(`Hora servidor: ${horaDebug}, minActual: ${minActual}, Zona horaria offset: ${ahora.getTimezoneOffset()}`);
 
     // Tiempo mínimo válido: depende de si es hoy o futuro
     const minInicio = esHoy
@@ -225,6 +229,11 @@ export const obtenerHorariosLibres = async (req, res) => {
       : HORA_APERTURA;
 
     const minFin = HORA_CIERRE - duracion;
+    
+    // DEBUG: Mostrar tiempos calculados
+    const horaInicio = String(Math.floor(minInicio / 60)).padStart(2, '0') + ':' + String(minInicio % 60).padStart(2, '0');
+    const horaFin = String(Math.floor(minFin / 60)).padStart(2, '0') + ':' + String(minFin % 60).padStart(2, '0');
+    console.log(`Rango: ${horaInicio} - ${horaFin}, esHoy: ${esHoy}`);
 
     // Si ya no hay espacio para reservar, devuelve vacío
     if (minInicio > minFin) {
