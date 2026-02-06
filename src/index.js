@@ -12,21 +12,12 @@ import citasRoutes from "./routes/citasRoutes.js";
 import ingresosRoutes from "./routes/ingresosRoutes.js";
 dotenv.config();
 
-console.log("DB_HOST:", process.env.DB_HOST);
-console.log("DB_PORT:", process.env.DB_PORT);
-console.log("DB_USER:", process.env.DB_USER);
-console.log("DB_NAME:", process.env.DB_NAME);
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
-
 const app = express();
 
 // Leer orígenes permitidos desde variable de entorno o usar valores por defecto
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : [
-      "https://frontend-barbershop-kappa.vercel.app",
-      "http://localhost:5173"
-    ];
+  : ["https://frontend-barbershop-kappa.vercel.app", "http://localhost:5173"];
 
 app.use(
   cors({
@@ -41,7 +32,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 app.use(express.json());
 

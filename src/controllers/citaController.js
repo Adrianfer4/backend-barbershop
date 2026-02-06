@@ -176,7 +176,7 @@ export const borrarCita = async (req, res) => {
 };
 
 export const obtenerHorariosLibres = async (req, res) => {
-  const { fecha, servicio, barbero } = req.query;
+  const { fecha, servicio, barbero, timezoneOffset } = req.query;
 
   if (!fecha || !servicio || !barbero)
     return res
@@ -210,18 +210,22 @@ export const obtenerHorariosLibres = async (req, res) => {
 
     // Determinar si la fecha es hoy (en hora local, no UTC)
     const hoy = new Date();
-    const fechaHoyLocal = hoy.getFullYear() + '-' + 
-                          String(hoy.getMonth() + 1).padStart(2, '0') + '-' + 
-                          String(hoy.getDate()).padStart(2, '0');
+    
+    // Ajustar la hora del servidor por el offset de zona horaria del cliente
+    const offsetMinutos = timezoneOffset ? parseInt(timezoneOffset) : 0;
+    const ahora = new Date(hoy.getTime() + offsetMinutos * 60 * 1000);
+    
+    const fechaHoyLocal = ahora.getFullYear() + '-' + 
+                          String(ahora.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(ahora.getDate()).padStart(2, '0');
     const esHoy = fecha === fechaHoyLocal;
 
     // Tiempo actual en minutos desde medianoche
-    const ahora = new Date();
     const minActual = ahora.getHours() * 60 + ahora.getMinutes();
     
     // DEBUG: Mostrar la hora que el servidor está usando
     const horaDebug = String(ahora.getHours()).padStart(2, '0') + ':' + String(ahora.getMinutes()).padStart(2, '0');
-    console.log(`Hora servidor: ${horaDebug}, minActual: ${minActual}, Zona horaria offset: ${ahora.getTimezoneOffset()}`);
+    console.log(`Hora cliente: ${horaDebug}, minActual: ${minActual}, Offset: ${offsetMinutos} min`);
 
     // Tiempo mínimo válido: depende de si es hoy o futuro
     const minInicio = esHoy
