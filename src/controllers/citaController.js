@@ -18,7 +18,7 @@ import {
 } from "../models/ingresosModel.js";
 
 const HORA_APERTURA = 9 * 60;
-const HORA_CIERRE = 18 * 60;
+const HORA_CIERRE = 20 * 60;
 const MARGEN_RESERVA = 30;
 
 const aMin = (hora) => {
@@ -209,7 +209,10 @@ export const obtenerHorariosLibres = async (req, res) => {
     });
 
     // Determinar si la fecha es hoy (en hora local, no UTC)
-    const fechaHoyLocal = new Date().toLocaleDateString("sv-SE"); // YYYY-MM-DD
+    const hoy = new Date();
+    const fechaHoyLocal = hoy.getFullYear() + '-' + 
+                          String(hoy.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(hoy.getDate()).padStart(2, '0');
     const esHoy = fecha === fechaHoyLocal;
 
     // Tiempo actual en minutos desde medianoche
